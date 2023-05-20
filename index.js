@@ -46,6 +46,18 @@ async function run() {
             res.send(result)
         })
 
+        //categorywise
+        app.get('/all/:subCategory', async (req, res) => {
+            console.log(req.params.subCategory);
+            if (req.params.subCategory == "car" || req.params.subCategory == "bike" || req.params.subCategory == "truck") {
+                const result = await toysCollection.find({ subCategory: req.params.subCategory }).toArray()
+                return res.send(result)
+            }
+            const result = await toysCollection.find({ subCategory: req.params.subCategory }).toArray()
+            return res.send(result)
+
+        })
+
         // get:signleidData  
         app.get('/allToys/:id', async (req, res) => {
             const id = req.params.id;
