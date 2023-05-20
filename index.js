@@ -32,6 +32,12 @@ async function run() {
         const toysCollection = client.db("toysDb").collection("toys")
 
 
+
+        const indexKey = { toyName: 1 }
+        const indexOptions = { name: "title" }
+        const result = await toysCollection.createIndex(indexKey, indexOptions)
+
+
         //post
         app.post('/allToys', async (req, res) => {
             const toy = req.body;
@@ -48,13 +54,13 @@ async function run() {
 
         //categorywise
         app.get('/all/:subCategory', async (req, res) => {
-            console.log(req.params.subCategory);
+            // console.log(req.params.subCategory);
             if (req.params.subCategory == "car" || req.params.subCategory == "bike" || req.params.subCategory == "truck") {
                 const result = await toysCollection.find({ subCategory: req.params.subCategory }).toArray()
                 return res.send(result)
             }
             const result = await toysCollection.find({ subCategory: req.params.subCategory }).toArray()
-            return res.send(result)
+            res.send(result)
 
         })
 
@@ -72,6 +78,18 @@ async function run() {
             const result = await toysCollection.find({ email: req.params.email }).toArray()
             return res.send(result)
 
+        })
+
+        // search
+        app.get('/searchToyName/:text', async (req, res) => {
+            const text = req.params.text;
+
+            const result = await toysCollection.find({
+                $or: [
+                    { toyName: { $regex: text, $options: "i" } }
+                ]
+            }).toArray()
+            res.send(result)
         })
 
         //update
